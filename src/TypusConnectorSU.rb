@@ -34,7 +34,7 @@ module TypusConnector
     FILE_BASENAME = File.basename(path, ".*")
     PLUGIN_DIR = File.join(File.dirname(path), FILE_BASENAME)
 
-    extension = SketchupExtension.new(PLUGIN_NAME, "YanusConnectorSU/main")
+    extension = SketchupExtension.new(PLUGIN_NAME, "TypusConnectorSU/main")
     extension.description = "Connects Typus to Sketchup."
     extension.version     = PLUGIN_VERSION
     extension.copyright   = "©2025 Typus"
