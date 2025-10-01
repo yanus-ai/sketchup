@@ -1,7 +1,7 @@
-# YanusConnectorSU/color_profile.rb
+# TypusConnectorSU/color_profile.rb
 # Handles replacing materials with unique colors and restoring them
 
-module YanusConnector
+module TypusConnector
   class ColorProfile
     def initialize
       @model = Sketchup.active_model

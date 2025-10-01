@@ -1,7 +1,7 @@
-# YanusConnectorSU/main.rb
-# Main entry file for the YanusConnector plugin
+# TypusConnectorSU/main.rb
+# Main entry file for the TypusConnector plugin
 
-module YanusConnector
+module TypusConnector
   Sketchup.require "#{PLUGIN_DIR}/menu"
   Sketchup.require "#{PLUGIN_DIR}/color_profile"
   Sketchup.require "#{PLUGIN_DIR}/export_base64"
@@ -31,6 +31,19 @@ module YanusConnector
       Toolbar.new
       file_loaded(__FILE__)
     end
+  end
+
+  # Reload extension by running this method from the Ruby Console:
+  def self.reload
+    original_verbose = $VERBOSE
+    $VERBOSE = nil
+    pattern = File.join(__dir__, '**/*.rb')
+    Dir.glob(pattern).each { |file|
+      # Cannot use `Sketchup.load` because its an alias for `Sketchup.require`.
+      load file
+    }.size
+  ensure
+    $VERBOSE = original_verbose
   end
 
   # Run Initialization
@@ -79,14 +92,14 @@ module YanusConnector
     # Function to create only the png image.
     def create_scan(org = false)
       return unless valid_model?
-      @color_processor = YanusConnector::ColorProfile.new
-      @base64_encoder = YanusConnector::ExportBase64.new
+      @color_processor = TypusConnector::ColorProfile.new
+      @base64_encoder = TypusConnector::ExportBase64.new
 
       Sketchup.active_model.start_operation('Create Scan', true)
 
       begin
         scene = nil
-        scene = capture_scene('yanus_img_preview.png') if org
+        scene = capture_scene('Typus_img_preview.png') if org
 
         # Replace materials with unique colors and get backup + map
         #color_map = @color_processor.getReady
@@ -94,7 +107,7 @@ module YanusConnector
         #puts 'Material replacement done.'
 
         # Capture the color-mapped image
-        image_path = capture_scene('yanus_export_preview.png', true)
+        image_path = capture_scene('Typus_export_preview.png', true)
         # puts "Image Path is: #{image_path}"
 
         # Restore original materials
@@ -182,7 +195,7 @@ module YanusConnector
       timestamp = Time.now.strftime('%Y%m%d%H%M%S')
       filename  = "#{filename_prefix}_#{timestamp}.png"
 
-      temp_dir  = File.join(Sketchup.temp_dir, 'Yanus')
+      temp_dir  = File.join(Sketchup.temp_dir, 'Typus')
       Dir.mkdir(temp_dir) unless Dir.exist?(temp_dir)
       temp_path = File.join(temp_dir, filename)
 

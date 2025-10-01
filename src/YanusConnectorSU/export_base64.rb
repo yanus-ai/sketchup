@@ -1,7 +1,7 @@
-# YanusConnectorSU/export_base64.rb
+# TypusConnectorSU/export_base64.rb
 # Handles encoding an image file to Base64 format
 
-module YanusConnector
+module TypusConnector
   class ExportBase64
     def export(image_path)
       return nil unless valid_image?(image_path)
