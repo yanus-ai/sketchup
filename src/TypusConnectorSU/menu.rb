@@ -17,7 +17,7 @@ module TypusConnector
         dg.launch_Typus
       end
       cmd.tooltip = 'Open Typus Dialog'
-      cmd.large_icon = cmd.small_icon = File.join(__dir__, 'img', 'export_icon.png')
+      cmd.large_icon = cmd.small_icon = File.join(__dir__, 'img', 'logo_typus.png')
       cmd.status_bar_text = 'Open Typus Dialog'
 
       # Add button to toolbar

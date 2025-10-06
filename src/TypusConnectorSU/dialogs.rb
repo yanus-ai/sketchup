@@ -290,10 +290,10 @@ module TypusConnector
                           @dialog.execute_script("add_web_link()")
                         end
                       else
-                        puts "[YANUS ERROR] No Response from API."
+                        puts "[Typus ERROR] No Response from API."
                       end
                     rescue JSON::ParserError => e
-                      puts "[YANUS ERROR] JSON Parsing Error: #{e.message}"
+                      puts "[Typus ERROR] JSON Parsing Error: #{e.message}"
                     end
                   end
                 end

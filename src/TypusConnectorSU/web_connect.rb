@@ -21,10 +21,8 @@ module TypusConnector
 
       begin
         response = http.request(request)
-        if response.code.to_i == 201
-          #puts response.body
-          result = response.body
-        else
+        result = response.body
+        if response.code.to_i != 201
           puts "[Typus ERROR] HTTP Error #{response.code}: #{response.body}" if response.code.to_i >= 400
         end
       rescue StandardError => e
