@@ -274,20 +274,22 @@ module TypusConnector
                   result = @tk.export_to_api(json_data) do |response|
                     begin
                       if response && !response.empty?
-                        parsed_response = response.is_a?(String) ? JSON.parse(response) : response
-                        message = parsed_response.dig('response', 'message')
-                        link = parsed_response.dig('response', 'link')
-
-                        if message == "Unauthorized"
+                        if response == "Unauthorized"
                           login_dialog
                           @dialog.close
-                        elsif link
-                          @dialog.execute_script("updateScanPreview('#{scan[2]}')")
-                          if @browser == 0
-                            UI.openURL(link)
-                            @browser = 1
+                        else
+                          parsed_response = response.is_a?(String) ? JSON.parse(response) : response
+                          message = parsed_response.dig('response', 'message')
+                          link = parsed_response.dig('response', 'link')
+
+                          if link
+                            @dialog.execute_script("updateScanPreview('#{scan[2]}')")
+                            if @browser == 0
+                              UI.openURL(link)
+                              @browser = 1
+                            end
+                            @dialog.execute_script("add_web_link()")
                           end
-                          @dialog.execute_script("add_web_link()")
                         end
                       else
                         puts "[Typus ERROR] No Response from API."
@@ -342,19 +344,21 @@ module TypusConnector
                 result = @tk.export_to_api(json_data) do |response|
                   begin
                     #puts response
-                    parsed_response = response.is_a?(String) ? JSON.parse(response) : response
-                    message = parsed_response.dig('response', 'message')
-                    link = parsed_response.dig('response', 'link')
-
-                    if message == "Unauthorized"
+                    if response == "Unauthorized"
                       login_dialog
                       @dialog.close
-                    elsif link
-                      if @browser == 0
-                        UI.openURL(link)
-                        @browser = 1
+                    else
+                      parsed_response = response.is_a?(String) ? JSON.parse(response) : response
+                      message = parsed_response.dig('response', 'message')
+                      link = parsed_response.dig('response', 'link')
+
+                      if link
+                        if @browser == 0
+                          UI.openURL(link)
+                          @browser = 1
+                        end
+                        @dialog.execute_script("add_web_link()")
                       end
-                      @dialog.execute_script("add_web_link()")
                     end
                   rescue JSON::ParserError => e
                     puts "[Typus ERROR] JSON Parsing Error: #{e.message}"
