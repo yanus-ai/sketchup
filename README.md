@@ -1,9 +1,9 @@
-# Yanus AI - Sketchup Connector
+# Typus AI - Sketchup Connector
 
 ---
 
 **Description:**  
-The repository contains the **Yanus AI - Sketchup Extension**, a SketchUp plugin designed to capture masks and send them to the Yanus API.
+The repository contains the **Typus AI - Sketchup Extension**, a SketchUp plugin designed to capture masks and send them to the Typus API.
 
 **Core Plugin Classes**
 
@@ -33,7 +33,7 @@ Responsible for initializing the plugin, managing scene settings, image capture,
 **Setup & Installation**
 
 1. **Download the Plugin RBZ File:**  
-   Ensure you have the latest `.rbz` file for the Yanus AI - Sketchup Connector plugin.
+   Ensure you have the latest `.rbz` file for the Typus AI - Sketchup Connector plugin.
 
 2. **Install the Plugin:**  
    Open SketchUp and go to **Window > Extension Manager**.  

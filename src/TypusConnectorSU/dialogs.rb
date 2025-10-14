@@ -1,9 +1,9 @@
-# YanusConnectorSU/dialogs.rb
-# Dialogs for the YanusConnector plugin
+# TypusConnectorSU/dialogs.rb
+# Dialogs for the TypusConnector plugin
 
-module YanusConnector
-  class YanusDialogs
-    # Initialize the YanusDialogs class
+module TypusConnector
+  class TypusDialogs
+    # Initialize the TypusDialogs class
     def initialize
       @exp    = ExportProfile.new
       @server = nil
@@ -19,8 +19,8 @@ module YanusConnector
     def login_dialog
       # Create a new HTMLDialog instance for login.
       @logindialog = UI::HtmlDialog.new(
-        dialog_title: "Yanus Login",
-        preferences_key: "com.yanus_connector.login",
+        dialog_title: "Typus Login",
+        preferences_key: "com.Typus_connector.login",
         scrollable: true,
         resizable: false,
         width: 1200,
@@ -29,7 +29,8 @@ module YanusConnector
 
       # Set the login URL.
       #@logindialog.set_url('https://app.yanus.ai/version-test/auth?m=sketchup')
-      @logindialog.set_url('https://app.yanus.ai/auth?m=sketchup')
+      #@logindialog.set_url('https://app.yanus.ai/auth?m=sketchup')
+      @logindialog.set_url('https://app.typus.ai/login?m=sketchuplogin')
 
       @logindialog.set_on_closed do |_action_context|
         stop_polling_server
@@ -134,7 +135,7 @@ module YanusConnector
       @tk.set_token(token_value)
 
       close_login_dialog
-      yanus_dialog
+      typus_dialog
     rescue StandardError => e
       puts "[ERROR] Exception processing token: #{e.message}"
     end
@@ -157,11 +158,11 @@ module YanusConnector
       end
     end
 
-    def launch_yanus(state = nil)
+    def launch_Typus(state = nil)
       token = @tk.get_token
       if token
         #puts "Token found"
-        yanus_dialog
+        typus_dialog
         if state == 1
           capture_regions
         elsif state == 2
@@ -174,12 +175,12 @@ module YanusConnector
 
     end
 
-    # Method to create the main Yanus Export dialog
-    def yanus_dialog
+    # Method to create the main Typus Export dialog
+    def typus_dialog
 
       @dialog = UI::HtmlDialog.new(
-          dialog_title: 'Yanus Connector',
-          preferences_key: 'com.yanus_connector.export',
+          dialog_title: 'Typus Connector',
+          preferences_key: 'com.Typus_connector.export',
           scrollable: true,
           resizable: true,
           width: 540,
@@ -255,16 +256,16 @@ module YanusConnector
                 json_data = JSON.generate(json_data)
 
                 # Save for dubgging.
-                temp_yanus_dir = File.join(Sketchup.temp_dir, "Yanus")
-                FileUtils.mkdir_p(temp_yanus_dir) unless Dir.exist?(temp_yanus_dir)
+                temp_Typus_dir = File.join(Sketchup.temp_dir, "Typus")
+                FileUtils.mkdir_p(temp_Typus_dir) unless Dir.exist?(temp_Typus_dir)
                 timestamp = Time.now.strftime("%Y%m%d%H%M%S")
                 file_name = "JSON-Data-#{timestamp}.json"
-                file_path = File.join(temp_yanus_dir, file_name)
+                file_path = File.join(temp_Typus_dir, file_name)
                 File.open(file_path, 'w') { |file| file.write(json_data) }
 
                 # Update UI after processing both images
                 @dialog.execute_script("updateScanPreview('#{scan[1]}')")
-                @dialog.execute_script("addLoading('Exporting to Yanus...')")
+                @dialog.execute_script("addLoading('Exporting to Typus...')")
 
                 # Add 4 second delay before exporting to API
                 UI.start_timer(2, false) do
@@ -273,26 +274,28 @@ module YanusConnector
                   result = @tk.export_to_api(json_data) do |response|
                     begin
                       if response && !response.empty?
-                        parsed_response = response.is_a?(String) ? JSON.parse(response) : response
-                        message = parsed_response.dig('response', 'message')
-                        link = parsed_response.dig('response', 'link')
-
-                        if message == "Unauthorized"
+                        if response == "Unauthorized"
                           login_dialog
                           @dialog.close
-                        elsif link
-                          @dialog.execute_script("updateScanPreview('#{scan[2]}')")
-                          if @browser == 0
-                            UI.openURL(link)
-                            @browser = 1
+                        else
+                          parsed_response = response.is_a?(String) ? JSON.parse(response) : response
+                          message = parsed_response.dig('response', 'message')
+                          link = parsed_response.dig('response', 'link')
+
+                          if link
+                            @dialog.execute_script("updateScanPreview('#{scan[2]}')")
+                            if @browser == 0
+                              UI.openURL(link)
+                              @browser = 1
+                            end
+                            @dialog.execute_script("add_web_link()")
                           end
-                          @dialog.execute_script("add_web_link()")
                         end
                       else
-                        puts "[YANUS ERROR] No Response from API."
+                        puts "[Typus ERROR] No Response from API."
                       end
                     rescue JSON::ParserError => e
-                      puts "[YANUS ERROR] JSON Parsing Error: #{e.message}"
+                      puts "[Typus ERROR] JSON Parsing Error: #{e.message}"
                     end
                   end
                 end
@@ -325,14 +328,14 @@ module YanusConnector
               json_data = JSON.generate(json_data)
 
               # Save for dubgging.
-              temp_yanus_dir = File.join(Sketchup.temp_dir, "Yanus")
-              FileUtils.mkdir_p(temp_yanus_dir) unless Dir.exist?(temp_yanus_dir)
+              temp_Typus_dir = File.join(Sketchup.temp_dir, "Typus")
+              FileUtils.mkdir_p(temp_Typus_dir) unless Dir.exist?(temp_Typus_dir)
               timestamp = Time.now.strftime("%Y%m%d%H%M%S")
               file_name = "JSON-Data-#{timestamp}.json"
-              file_path = File.join(temp_yanus_dir, file_name)
+              file_path = File.join(temp_Typus_dir, file_name)
               File.open(file_path, 'w') { |file| file.write(json_data) }
 
-              @dialog.execute_script("addLoading('Exporting to Yanus...')")
+              @dialog.execute_script("addLoading('Exporting to Typus...')")
 
               # Add 4 second delay before exporting to API
               UI.start_timer(2, false) do
@@ -341,22 +344,24 @@ module YanusConnector
                 result = @tk.export_to_api(json_data) do |response|
                   begin
                     #puts response
-                    parsed_response = response.is_a?(String) ? JSON.parse(response) : response
-                    message = parsed_response.dig('response', 'message')
-                    link = parsed_response.dig('response', 'link')
-
-                    if message == "Unauthorized"
+                    if response == "Unauthorized"
                       login_dialog
                       @dialog.close
-                    elsif link
-                      if @browser == 0
-                        UI.openURL(link)
-                        @browser = 1
+                    else
+                      parsed_response = response.is_a?(String) ? JSON.parse(response) : response
+                      message = parsed_response.dig('response', 'message')
+                      link = parsed_response.dig('response', 'link')
+
+                      if link
+                        if @browser == 0
+                          UI.openURL(link)
+                          @browser = 1
+                        end
+                        @dialog.execute_script("add_web_link()")
                       end
-                      @dialog.execute_script("add_web_link()")
                     end
                   rescue JSON::ParserError => e
-                    puts "[YANUS ERROR] JSON Parsing Error: #{e.message}"
+                    puts "[Typus ERROR] JSON Parsing Error: #{e.message}"
                   end
                 end
               end
@@ -368,7 +373,7 @@ module YanusConnector
 
     # Cleanup Temporary Files
     def cleanup_temp
-      temp_dir = File.join(Sketchup.temp_dir, 'Yanus')
+      temp_dir = File.join(Sketchup.temp_dir, 'Typus')
 
       if Dir.exist?(temp_dir)
         begin
@@ -393,13 +398,13 @@ module YanusConnector
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Yanus Export</title>
+          <title>Typus Export</title>
           <style>
             body {
               font-family: Arial, sans-serif;
               margin: 0;
               padding: 0;
-              background-color: #000;
+              background-color: #f0f0f0;
               color: #fff;
               text-align: center;
             }
@@ -408,8 +413,9 @@ module YanusConnector
               align-items: center;
               justify-content: space-between;
               padding: 10px 20px;
-              background-color: #000;
+              background-color: #f0f0f0;
               border-bottom: 1px solid #515151;
+              color: #000;
             }
             .logo {
               font-weight: bold;
@@ -423,11 +429,15 @@ module YanusConnector
               cursor: pointer;
               font-size: 1.2em;
               padding: 0px 6px;
+              color: #000; 
             }
             .login-icon img {
               height: 30px;
+              filter: brightness(0);
             }
-            /* New center status area in top bar */
+            #lottie-spinner svg path {
+              fill: #000 !important; /* In case the Lottie animation uses fill */
+            }
             #topbar-status {
               flex: 1;
               display: flex;
@@ -515,8 +525,8 @@ module YanusConnector
             #topbar-status button {
               padding: 5px 10px;
               background-color: #222;
-              color: #fff;
-              border: 1px solid #fff;
+              color: #000;
+              border: 1px solid #000;
               cursor: pointer;
             }
             #topbar-status button:hover {
@@ -573,7 +583,7 @@ module YanusConnector
               top: 50%;
               left: 50%;
               transform: translate(-50%, -50%);
-              background-color: rgb(0, 0, 0);
+              background-color: rgb(f0,f0,f0);
               border: 1px solid rgb(124, 124, 124);
               color: white;
               padding: 20px;
@@ -587,13 +597,13 @@ module YanusConnector
         <body>
           <div class="top-bar">
             <div class="logo">
-              <img src="#{File.join(__dir__, 'img', 'logo_yanus2.png')}" alt="YanusLogo">
+              <img src="#{File.join(__dir__, 'img', 'logo_typus.png')}" alt="TypusLogo">
             </div>
             <div id="topbar-status">
               <!-- The spinner is added directly here and hidden by default -->
               <div id="lottie-spinner" style="width:50px; height:50px; display:none;"></div>
               <!-- The loading message is added here, hidden by default -->
-              <span id="loading-message" style="margin-left:10px; display:none;"></span>
+              <span id="loading-message" style="margin-left:10px; display:none; color:#000;"></span>
             </div>
             <div class="login-icon" title="Profile">
               <img src="#{File.join(__dir__, 'img', 'user-square.png')}" alt="User">
@@ -889,7 +899,7 @@ module YanusConnector
         <html>
         <head>
         <style>
-          body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: black; color: white; }
+          body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: f0f0f0; color: white; }
 
           .loading-bar {
             width: 400px;
